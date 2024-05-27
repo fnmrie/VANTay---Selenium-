@@ -1,36 +1,57 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import 'chromedriver';
 
-describe('AddTicket Component', () => {
+describe('Add Ticket Test', () => {
   let driver: WebDriver;
 
   beforeAll(async () => {
     driver = await new Builder().forBrowser('chrome').build();
-
-    await driver.get('http://localhost:3001/cashier/add-ticket/333');
-  }, 30000);
+  }, 15000); 
 
   afterAll(async () => {
-    await driver.quit();
+    if (driver) {
+      await driver.quit();
+    }
   });
 
-  test('should create a new ticket and navigate to cashier page', async () => {
+  test('should add a ticket successfully', async () => {
+    await driver.get('http://localhost:3001/add-ticket'); 
 
-    await driver.wait(until.elementLocated(By.css('.create-ticket-form')), 10000);
+    const passengerNameInput = await driver.findElement(By.name('passenger_name'));
+    await passengerNameInput.sendKeys('John Doe');
 
-    await driver.findElement(By.css('input[name="passengerName"]')).sendKeys('John Doe');
-    await driver.findElement(By.css('input[name="passengerClassification"]')).sendKeys('Regular');
-    await driver.findElement(By.css('input[name="passengerAddress"]')).sendKeys('123 Main St');
-    await driver.findElement(By.css('input[name="passengerPhoneNo"]')).sendKeys('555-555-5555');
-    await driver.findElement(By.css('input[name="date"]')).sendKeys('2024-05-30T12:00');
-    await driver.findElement(By.css('input[name="destination"]')).sendKeys('City Center');
-    await driver.findElement(By.css('input[name="seatNo"]')).sendKeys('5');
-    await driver.findElement(By.css('input[name="fare"]')).sendKeys('10');
+    const passengerClassificationInput = await driver.findElement(By.name('passenger_classification'));
+    await passengerClassificationInput.sendKeys('Adult');
 
-    await driver.findElement(By.css('.btn-submit')).click();
+    const passengerAddressInput = await driver.findElement(By.name('passenger_address'));
+    await passengerAddressInput.sendKeys('123 Main Street');
 
-    await driver.wait(until.urlIs('http://localhost:3001/cashier'), 10000);
+    const passengerPhoneInput = await driver.findElement(By.name('passenger_phone_no'));
+    await passengerPhoneInput.sendKeys('123-456-7890');
 
+    const dateInput = await driver.findElement(By.name('date'));
+    await dateInput.sendKeys('2024-06-01');
+
+    const destinationInput = await driver.findElement(By.name('destination'));
+    await destinationInput.sendKeys('New York');
+
+    const seatNoInput = await driver.findElement(By.name('seat_no'));
+    await seatNoInput.sendKeys('5');
+
+    const fareInput = await driver.findElement(By.name('fare'));
+    await fareInput.sendKeys('50');
+
+    const vanIdInput = await driver.findElement(By.name('vanId'));
+    await vanIdInput.sendKeys('1');
+
+    const userIdInput = await driver.findElement(By.name('userId'));
+    await userIdInput.sendKeys('1');
+
+    const createTicketButton = await driver.findElement(By.tagName('button'));
+    await createTicketButton.click();
+
+    await driver.wait(until.urlIs('http://localhost:3001/cashier/add-ticket/:id'), 10000); 
     const currentUrl = await driver.getCurrentUrl();
-    expect(currentUrl).toBe('http://localhost:3001/cashier');
-  }, 30000);
+    expect(currentUrl).toBe('http://localhost:3001/admin/manage-ticket'); 
+  }, 30000); 
 });
